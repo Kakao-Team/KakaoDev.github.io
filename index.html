@@ -4,23 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KakaoDev Bio Website</title>
-    <script src="https://kit.fontawesome.com/0c7c0a9497.js" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #000;
-            color: #fff;
-            overflow: hidden;
-            margin: 0;
+        
+        :root {
+            --primary-color: #ff0096;
+            --secondary-color: #00ccff;
+            --accent-color: #ff6600;
+            --text-color: #ffffff;
+            --bg-color: #000000;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
+        
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+        
         .background {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -28,6 +46,7 @@
             overflow: hidden;
             z-index: -1;
         }
+        
         .blur-layer {
             position: absolute;
             top: 0;
@@ -37,6 +56,7 @@
             backdrop-filter: blur(20px);
             background: rgba(0, 0, 0, 0.3);
         }
+        
         .gradient-overlay {
             position: absolute;
             top: 0;
@@ -45,67 +65,120 @@
             height: 100%;
             background: radial-gradient(circle, rgba(255, 0, 150, 0.3), rgba(0, 204, 255, 0.3));
             mix-blend-mode: screen;
-            animation: gradient-shift 10s infinite alternate;
+            animation: gradient-shift 15s infinite alternate ease-in-out;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
         }
+        
+        body.loaded .gradient-overlay {
+            opacity: 1;
+        }
+        
         @keyframes gradient-shift {
             0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(-10px, -10px); }
             100% { transform: scale(1.2) translate(-20px, -20px); }
         }
+        
         .shape {
             position: absolute;
-            opacity: 0.6;
+            opacity: 0;
             filter: blur(20px);
+            transition: opacity 3s ease-in-out;
+        }
+        
+        body.loaded .shape {
+            opacity: 0.6;
             animation: float 20s infinite alternate ease-in-out;
         }
+        
         .circle {
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #ff0096, #00ccff);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
         }
+        
         .square {
             width: 150px;
             height: 150px;
             background: linear-gradient(45deg, #ff00ff, #00ffff);
             transform: rotate(45deg);
         }
+        
         .triangle {
             width: 0;
             height: 0;
             border-left: 100px solid transparent;
             border-right: 100px solid transparent;
-            border-bottom: 173px solid #ff6600;
+            border-bottom: 173px solid var(--accent-color);
         }
+        
         @keyframes float {
             0% { transform: translate(0, 0) rotate(0deg); }
             33% { transform: translate(30px, -30px) rotate(5deg); }
             66% { transform: translate(-20px, 20px) rotate(-5deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
+        
         #loading-screen {
-            background-color: white;
+            background-color: #000;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
         }
+        
         .loader {
-            border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
-            border-radius: 50%;
             width: 120px;
             height: 120px;
-            animation: spin 2s linear infinite;
+            position: relative;
+            margin-bottom: 20px;
         }
-        @keyframes spin {
+        
+        .loader:before, .loader:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(transparent, var(--primary-color));
+            animation: rotate 2s linear infinite;
+        }
+        
+        .loader:after {
+            background: conic-gradient(transparent, var(--secondary-color));
+            animation: rotate 2s linear infinite reverse;
+            filter: blur(20px);
+        }
+        
+        @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        #loading-screen p {
+            color: #fff;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: pulse 1.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
         .sparkle {
             position: absolute;
             width: 5px;
@@ -115,15 +188,23 @@
             box-shadow: 0 0 20px 10px rgba(255, 255, 0, 0.7);
             opacity: 0;
             animation: sparkle 3s infinite ease-in-out, flow 10s infinite linear;
+            transition: opacity 2s ease-in-out;
         }
+        
+        body.loaded .sparkle {
+            opacity: 1;
+        }
+        
         @keyframes sparkle {
             0%, 100% { opacity: 0; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.5); }
         }
+        
         @keyframes flow {
             0% { transform: translateY(-100%) translateX(0) rotate(0deg); }
             100% { transform: translateY(100vh) translateX(100vw) rotate(360deg); }
         }
+        
         .background-sparkle {
             position: absolute;
             width: 2px;
@@ -132,114 +213,363 @@
             box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.3);
             opacity: 0;
             animation: bg-sparkle 4s infinite ease-in-out;
+            transition: opacity 2s ease-in-out;
         }
+        
+        body.loaded .background-sparkle {
+            opacity: 1;
+        }
+        
         @keyframes bg-sparkle {
             0%, 100% { opacity: 0; transform: scale(0.5); }
             50% { opacity: 0.5; transform: scale(1.2); }
         }
+        
         .bloom {
             position: absolute;
             width: 300px;
             height: 300px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255, 255, 0, 0.3), transparent 70%);
-            animation: bloom 10s infinite alternate;
+            opacity: 0;
             filter: blur(30px);
+            transition: opacity 3s ease-in-out;
         }
+        
+        body.loaded .bloom {
+            opacity: 0.6;
+            animation: bloom 10s infinite alternate ease-in-out;
+        }
+        
         @keyframes bloom {
             0%, 100% { transform: scale(1); opacity: 0.3; }
             50% { transform: scale(1.5); opacity: 0.6; }
         }
+        
         .content {
             position: relative;
             text-align: center;
-            padding-top: 10%;
+            padding-top: 10vh;
             z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transition-delay: 0.5s;
         }
+        
+        body.loaded .content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .content h1 {
-            font-size: 3em;
-            background: linear-gradient(45deg, #ff0096, #00ccff);
+            font-size: 4em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
+            background-clip: text;
             color: transparent;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             animation: glow 2s infinite alternate;
+            margin-bottom: 20px;
         }
+        
         @keyframes glow {
             0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
             100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 0, 150, 0.5); }
         }
+        
         .content p {
-            font-size: 1.2em;
+            font-size: 1.4em;
             margin-top: 20px;
             color: rgba(255, 255, 255, 0.8);
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
+        
         .bio {
-            margin-top: 50px;
-            padding: 20px;
+            margin-top: 60px;
+            padding: 30px;
             text-align: left;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            max-width: 600px;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transition-delay: 0.8s;
         }
+        
+        body.loaded .bio {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .bio h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
+            font-size: 2.5em;
+            margin-bottom: 25px;
             color: #fff;
+            position: relative;
+            display: inline-block;
         }
+        
+        .bio h2:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+        
         .bio p {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            color: #ccc;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #eee;
+            line-height: 1.6;
         }
-        .bio i {
-            font-size: 2em;
-            margin: 10px;
+        
+        .bio strong {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 1.8em;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-        .bio i:hover {
-            transform: scale(1.2);
+        
+        .social-icon:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: transform 0.5s ease-in-out;
+            transform: skewX(-25deg);
         }
+        
+        .social-icon:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .social-icon:hover:before {
+            transform: skewX(-25deg) translateX(200%);
+        }
+        
         .language-switcher {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
+            bottom: 30px;
+            left: 30px;
+            backdrop-filter: blur(10px);
+            background: var(--glass-bg);
             color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 50px;
             cursor: pointer;
             z-index: 1001;
-            opacity: 0.8;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out, background 0.3s;
+            transition-delay: 1s;
         }
+        
+        body.loaded .language-switcher {
+            opacity: 0.8;
+            transform: translateY(0);
+        }
+        
+        .language-switcher:hover {
+            opacity: 1;
+            transform: translateY(-5px);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+        
+        body.loaded .particles {
+            opacity: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background-color: #ffffff;
+            border-radius: 50%;
+        }
+        
         @media (max-width: 768px) {
+            .content {
+                padding-top: 5vh;
+            }
+            
             .content h1 {
                 font-size: 2.5em;
             }
+            
             .bio {
                 margin-top: 30px;
-                padding: 15px;
+                padding: 20px;
+                margin-left: 15px;
+                margin-right: 15px;
             }
+            
             .bio h2 {
-                font-size: 1.5em;
+                font-size: 2em;
             }
+            
             .bio p {
                 font-size: 1em;
             }
-            .bio i {
+            
+            .social-icon {
+                width: 50px;
+                height: 50px;
                 font-size: 1.5em;
             }
+            
+            .language-switcher {
+                bottom: 20px;
+                left: 20px;
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content h1 {
+                font-size: 2em;
+            }
+            
+            .content p {
+                font-size: 1.1em;
+            }
+            
+            .bio h2 {
+                font-size: 1.8em;
+            }
+        }
+        
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--secondary-color), var(--primary-color));
+        }
+        
+        /* Added Neon Border Effect */
+        .neon-border {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
+            border-image-slice: 1;
+            pointer-events: none;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            transition-delay: 1.2s;
+        }
+        
+        body.loaded .neon-border {
+            opacity: 0.7;
+            animation: borderGlow 5s infinite alternate;
+        }
+        
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 5px var(--primary-color), inset 0 0 5px var(--primary-color); }
+            50% { box-shadow: 0 0 20px var(--secondary-color), inset 0 0 10px var(--secondary-color); }
+            100% { box-shadow: 0 0 5px var(--accent-color), inset 0 0 5px var(--accent-color); }
+        }
+        
+        /* Typing Effect */
+        .typing-text {
+            border-right: 3px solid var(--primary-color);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            width: 0;
+            display: inline-block;
+        }
+        
+        body.loaded .typing-text {
+            width: 100%;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary-color) }
         }
     </style>
 </head>
 <body>
     <div id="loading-screen">
         <div class="loader"></div>
-        <p style="position: flex; color: #000; font-size: 1.5em;">Сейчас сайт будет загружен...</p>
+        <p>Загрузка...</p>
     </div>
+    
+    <div class="particles" id="particles"></div>
+    
     <div class="background">
         <div class="blur-layer"></div>
         <div class="gradient-overlay"></div>
@@ -254,19 +584,26 @@
         <div class="sparkle"></div>
         <div class="sparkle"></div>
         <div class="sparkle"></div>
-        <div class="bloom"></div>
-        <div class="bloom"></div>
-        <div class="bloom"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="bloom" style="top: 30%; left: 20%;"></div>
+        <div class="bloom" style="top: 70%; left: 80%;"></div>
+        <div class="bloom" style="top: 50%; left: 50%;"></div>
     </div>
+    
     <div class="background">
         <div class="background-sparkle"></div>
         <div class="background-sparkle"></div>
         <div class="background-sparkle"></div>
         <div class="background-sparkle"></div>
         <div class="background-sparkle"></div>
+        <div class="background-sparkle"></div>
+        <div class="background-sparkle"></div>
+        <div class="background-sparkle"></div>
     </div>
+    
     <div class="content">
-        <h1>Welcome, I am Kakao</h1>
+        <h1 class="typing-text">Welcome, I am Kakao</h1>
         <p>Welcome to my bio website. Two lines in Telegram/Discord are not enough :)</p>
     </div>
 
@@ -279,74 +616,32 @@
         <p><strong>Skills:</strong> Web Development, C#, Java, Kotlin, Python Html/Css and JavaScript programming, UX/UI Design</p>
         <p><strong>Contact:</strong> You can reach me via my socials</p>
         
-        <div>
-            <i class="fab fa-discord" onclick="window.location.href='https://discordapp.com/users/1295403514113167430/'"></i>
-            <i class="fab fa-telegram-plane" onclick="window.location.href='https://t.me/KakaoBinaryPups'"></i>
+        <div class="social-icons">
+            <div class="social-icon" onclick="window.location.href='https://discordapp.com/users/1295403514113167430/'">
+                <i class="fab fa-discord"></i>
+            </div>
+            <div class="social-icon" onclick="window.location.href='https://t.me/KakaoBinaryPups'">
+                <i class="fab fa-telegram-plane"></i>
+            </div>
         </div>
     </div>
 
-    <div class="language-switcher" onclick="toggleLanguage()">Switch to Russian</div>
+    <div class="language-switcher" onclick="toggleLanguage()">
+        <span id="lang-text">Switch to Russian</span>
+    </div>
+    
+    <div class="neon-border"></div>
 
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script>
-        function setRandomPosition(element) {
-            element.style.left = Math.random() * 100 + 'vw';
-            element.style.top = Math.random() * 100 + 'vh';
-        }
-
-        function setRandomDelay(element) {
-            element.style.animationDelay = Math.random() * 10 + 's';
-        }
-
-        function initializeElements() {
-            document.querySelectorAll('.background-sparkle, .sparkle, .bloom').forEach(el => {
-                setRandomPosition(el);
-                setRandomDelay(el);
-            });
-
-            document.querySelectorAll('.shape').forEach(el => {
-                setRandomDelay(el);
-            });
-        }
-
-        // Initialize elements
-        initializeElements();
-
-        window.addEventListener('load', function() {
+        // Preload all elements
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Initialize positions for all animated elements
+            initializeElements();
+            
+            // Show the page after loading
             setTimeout(function() {
-                document.getElementById('loading-screen').style.display = 'none';
-                document.body.classList.add('loaded');
-                initializeElements();
-            }, 5500);
-        });
-
-       function toggleLanguage() {
-           const currentLang = document.documentElement.lang;
-if (currentLang === 'en') {
-    document.documentElement.lang = 'ru';
-    document.querySelector('.content p').innerText = 'Добро пожаловать на мой сайт. Двух строк в Telegram/Discord недостаточно :)';
-    document.querySelector('h1').innerText = 'Привет, я Kakao';
-    document.querySelector('.language-switcher').innerText = 'Переключить на Английский';
-    document.querySelector('.bio h2').innerText = 'Обо мне';
-    document.querySelector('.bio p:nth-child(2)').innerText = 'Имя: Kakao';
-    document.querySelector('.bio p:nth-child(3)').innerText = 'Местоположение: Где-то в Интернете';
-    document.querySelector('.bio p:nth-child(4)').innerText = 'Интересы: Кодирование андроид/виндовс/линукс приложений, сайты, игры, технологии и креатив';
-    document.querySelector('.bio p:nth-child(5)').innerText = 'Навыки: Веб-разработка, C#, Java, Kotlin, Python Html/Css и JavaScript программирование, UX/UI дизайн';
-    document.querySelector('.bio p:nth-child(6)').innerText = 'Контакты: Свяжитесь со мной через мои социальные сети';
-} else {
-    document.documentElement.lang = 'en';
-    document.querySelector('h1').innerText = 'Welcome, I am Kakao';
-    document.querySelector('.content p').innerText = 'Welcome to my bio website. Two lines in Telegram/Discord are not enough :)';
-    document.querySelector('.language-switcher').innerText = 'Switch to Russian';
-    document.querySelector('.bio h2').innerText = 'About Me';
-    document.querySelector('.bio p:nth-child(2)').innerText = 'Name: Kakao';
-    document.querySelector('.bio p:nth-child(3)').innerText = 'Location: Somewhere on the Internet';
-    document.querySelector('.bio p:nth-child(4)').innerText = 'Interests: Coding Android/Windows/Linux applications, websites, games, technology, and creativity.';
-    document.querySelector('.bio p:nth-child(5)').innerText = 'Skills: Web Development, C#, Java, Kotlin, Python Html/Css and JavaScript programming, UX/UI Design';
-    document.querySelector('.bio p:nth-child(6)').innerText = 'Contact: You can reach me via my socials';
-}
-
-       }
-    </script>
-</body>
-</html>
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('loading-screen').style.visibility = 'h
