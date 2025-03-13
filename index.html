@@ -644,4 +644,97 @@
             setTimeout(function() {
                 document.getElementById('loading-screen').style.opacity = '0';
                 setTimeout(function() {
-                    document.getElementById('loading-screen').style.visibility = 'h
+                    document.getElementById('loading-screen').style.visibility = 'hidden';
+                    document.body.classList.add('loaded');
+                }, 500);
+            }, 2000);
+        });
+        
+        function setRandomPosition(element) {
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            element.style.left = posX + 'vw';
+            element.style.top = posY + 'vh';
+        }
+
+        function setRandomDelay(element) {
+            const delay = Math.random() * 10;
+            element.style.animationDelay = delay + 's';
+        }
+
+        function initializeElements() {
+            // Set random positions and delays for sparkles and blooms
+            document.querySelectorAll('.background-sparkle, .sparkle, .bloom').forEach(el => {
+                setRandomPosition(el);
+                setRandomDelay(el);
+            });
+
+            // Set random delays for shapes
+            document.querySelectorAll('.shape').forEach(el => {
+                setRandomDelay(el);
+            });
+        }
+        
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = posX + 'vw';
+                particle.style.top = posY + 'vh';
+                
+                // Random size
+                const size = Math.random() * 3;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Random opacity
+                const opacity = Math.random() * 0.5 + 0.3;
+                particle.style.opacity = opacity;
+                
+                // Animation
+                const duration = Math.random() * 30 + 20;
+                particle.style.animation = `float ${duration}s infinite alternate ease-in-out`;
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function toggleLanguage() {
+            const currentLang = document.documentElement.lang;
+            const langText = document.getElementById('lang-text');
+            
+            if (currentLang === 'en') {
+                document.documentElement.lang = 'ru';
+                document.querySelector('.content .typing-text').innerText = 'Привет, я Kakao';
+                document.querySelector('.content p').innerText = 'Добро пожаловать на мой сайт. Двух строк в Telegram/Discord недостаточно :)';
+                langText.innerText = 'Переключить на Английский';
+                document.querySelector('.bio h2').innerText = 'Обо мне';
+                document.querySelector('.bio p:nth-child(2)').innerText = 'Имя: Kakao';
+                document.querySelector('.bio p:nth-child(3)').innerText = 'Местоположение: Где-то в Интернете';
+                document.querySelector('.bio p:nth-child(4)').innerText = 'Интересы: Кодирование андроид/виндовс/линукс приложений, сайты, игры, технологии и креатив';
+                document.querySelector('.bio p:nth-child(5)').innerText = 'Навыки: Веб-разработка, C#, Java, Kotlin, Python Html/Css и JavaScript программирование, UX/UI дизайн';
+                document.querySelector('.bio p:nth-child(6)').innerText = 'Контакты: Свяжитесь со мной через мои социальные сети';
+            } else {
+                document.documentElement.lang = 'en';
+                document.querySelector('.content .typing-text').innerText = 'Welcome, I am Kakao';
+                document.querySelector('.content p').innerText = 'Welcome to my bio website. Two lines in Telegram/Discord are not enough :)';
+                langText.innerText = 'Switch to Russian';
+                document.querySelector('.bio h2').innerText = 'About Me';
+                document.querySelector('.bio p:nth-child(2)').innerText = 'Name: Kakao';
+                document.querySelector('.bio p:nth-child(3)').innerText = 'Location: Somewhere on the Internet';
+                document.querySelector('.bio p:nth-child(4)').innerText = 'Interests: Coding Android/Windows/Linux applications, websites, games, technology, and creativity.';
+                document.querySelector('.bio p:nth-child(5)').innerText = 'Skills: Web Development, C#, Java, Kotlin, Python Html/Css and JavaScript programming, UX/UI Design';
+                document.querySelector('.bio p:nth-child(6)').innerText = 'Contact: You can reach me via my socials';
+            }
+        }
+    </script>
+</body>
+</html>
